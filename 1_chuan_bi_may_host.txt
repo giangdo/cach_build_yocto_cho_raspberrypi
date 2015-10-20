@@ -1,0 +1,15 @@
+* Để build file ảnh yocto chứa hệ điều hành cho raspberry pi ta cần một máy tính chạy một trong những bản phân phối Linux sau:
+	Ubuntu 14.04 (LTS)
+	Ubuntu 14.10
+	Fedora release 21
+	CentOS release 6.x
+	CentOS release 7.x
+	Debian GNU/Linux 7.x (Wheezy)
+	Debian GNU/Linux 8.x (Jessie)
+	openSUSE 13.2
+
+* Trong hướng dẫn này người viết sử dụng ubuntu bản 14.04.3 LTS (để kiểm tra phiên bản hiện tại của hệ điều hành Ubuntu, ta dùng "$lsb_release -a")
+	
+* Cài đặt một số gói cần thiết để chuẩn bị cho việc build yocto:
+$sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+     build-essential chrpath socat libsdl1.2-dev xterm 

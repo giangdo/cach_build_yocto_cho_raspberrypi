@@ -1,0 +1,353 @@
+ontinuing in our series of posts on the Yocto Project, this post will teach you how to build an embedded Linux image containing the Qt5.4 for Raspberry Pi 2  using your graphics accelerator  VideoCore IV. In the second part we will see how to generate an SDK and integrate it into QtCreator so that we can develop and compile applications for our target. If you have not yet had contact with the Yocto, I suggest you do the tutorial  Henrique Rossi  on  Beaglebone Black + Yocto.
+
+ 
+
+One of the main developments of Qt5 against the Qt4 is the best use of the  GPU, among other features.
+
+ 
+
+ 
+Preparing Host
+
+ 
+
+The Yocto Project officially supports the following GNU / Linux distributions like build environment:
+
+    Ubuntu 14:04 and 14:10;
+    Fedora 21;
+    CentOS 6.x and 7.x;
+    7.x and 8.x Debian;
+    openSUSE 13.2.
+
+ 
+
+So that it runs in Host some packages need to be installed.
+
+ 
+
+Ubuntu and Debian:
+
+sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+     build-essential chrpath socat libsdl1.2-dev xterm 
+1
+2
+	
+sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
+     build-essential chrpath socat libsdl1.2-dev xterm 
+
+ 
+
+Fedora:
+
+sudo yum install gawk make wget tar bzip2 gzip python unzip perl patch \
+     diffutils diffstat git cpp gcc gcc-c++ glibc-devel texinfo chrpath \
+     ccache perl-Data-Dumper perl-Text-ParseWords perl-Thread-Queue socat \
+     SDL-devel xterm perl-Thread-Queue
+1
+2
+3
+4
+	
+sudo yum install gawk make wget tar bzip2 gzip python unzip perl patch \
+     diffutils diffstat git cpp gcc gcc-c++ glibc-devel texinfo chrpath \
+     ccache perl-Data-Dumper perl-Text-ParseWords perl-Thread-Queue socat \
+     SDL-devel xterm perl-Thread-Queue
+
+ 
+
+openSUSE:
+
+sudo zypper install python gcc gcc-c++ git chrpath make wget python-xml \
+     diffstat makeinfo python-curses patch socat libSDL-devel xterm
+1
+2
+	
+sudo zypper install python gcc gcc-c++ git chrpath make wget python-xml \
+     diffstat makeinfo python-curses patch socat libSDL-devel xterm
+
+ 
+
+CentOS:
+
+sudo yum install gawk make wget tar bzip2 gzip python unzip perl patch \
+     diffutils diffstat git cpp gcc gcc-c++ glibc-devel texinfo chrpath socat \
+     SDL-devel xterm
+1
+2
+3
+	
+sudo yum install gawk make wget tar bzip2 gzip python unzip perl patch \
+     diffutils diffstat git cpp gcc gcc-c++ glibc-devel texinfo chrpath socat \
+     SDL-devel xterm
+
+ 
+
+ 
+Riding the Building Environment
+
+ 
+
+Let's create the directories and download the required sources:
+
+mkdir -p ~/yocto/dl
+cd ~/yocto
+git clone -b fido git://git.yoctoproject.org/poky poky-fido
+cd poky-fido
+git clone -b fido git://git.yoctoproject.org/meta-raspberrypi
+git clone -b fido https://github.com/meta-qt5/meta-qt5.git
+git clone -b fido git://git.openembedded.org/meta-openembedded
+git clone -b fido https://bitbucket.org/embarcados/meta-embarcados.git
+1
+2
+3
+4
+5
+6
+7
+8
+	
+mkdir -p ~/yocto/dl
+cd ~/yocto
+git clone -b fido git://git.yoctoproject.org/poky poky-fido
+cd poky-fido
+git clone -b fido git://git.yoctoproject.org/meta-raspberrypi
+git clone -b fido https://github.com/meta-qt5/meta-qt5.git
+git clone -b fido git://git.openembedded.org/meta-openembedded
+git clone -b fido https://bitbucket.org/embarcados/meta-embarcados.git
+
+ 
+
+Note that we are using the version "fido" the Yocto Project. We also lowered the layer  meta-raspberrypi  having BSP ( Board Support Package ) with the necessary sources (bootloader, kernel libraries for the graphics accelerator, etc.) for rotating distribution in our Raspberry Pi 2. Also will use layers  meta-qt5 (which have revenues to compile the Qt5),  meta-OpenEmbedded (with additional applications) and  meta-embedded (with the necessary customizations in order to generate the test image).
+
+ 
+
+Now let's set up the environment in order to generate the software artifacts:
+
+cd ~/yocto
+. poky-fido/oe-init-build-env build-fido
+1
+2
+	
+cd ~/yocto
+. poky-fido/oe-init-build-env build-fido
+
+ 
+
+Edit the file  ~ / Yocto / build-fido / conf / bblayers.conf   so that it is as follows:
+
+# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
+# changes incompatibly
+LCONF_VERSION = "6"
+
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
+
+BBLAYERS ?= " \
+    ${TOPDIR}/../poky-fido/meta-embarcados \
+    ${TOPDIR}/../poky-fido/meta-embarcados/meta-rpi \
+    ${TOPDIR}/../poky-fido/meta-qt5 \
+    ${TOPDIR}/../poky-fido/meta-raspberrypi \
+    ${TOPDIR}/../poky-fido/meta-openembedded/meta-oe \
+    ${TOPDIR}/../poky-fido/meta-openembedded/meta-ruby \
+    ${TOPDIR}/../poky-fido/meta \
+    ${TOPDIR}/../poky-fido/meta-yocto \
+  "
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+	
+# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
+# changes incompatibly
+LCONF_VERSION = "6"
+ 
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
+ 
+BBLAYERS ?= " \
+    ${TOPDIR}/../poky-fido/meta-embarcados \
+    ${TOPDIR}/../poky-fido/meta-embarcados/meta-rpi \
+    ${TOPDIR}/../poky-fido/meta-qt5 \
+    ${TOPDIR}/../poky-fido/meta-raspberrypi \
+    ${TOPDIR}/../poky-fido/meta-openembedded/meta-oe \
+    ${TOPDIR}/../poky-fido/meta-openembedded/meta-ruby \
+    ${TOPDIR}/../poky-fido/meta \
+    ${TOPDIR}/../poky-fido/meta-yocto \
+  "
+
+ 
+
+The file  bblayers.conf  sets what are the layers to be considered by the build system.
+
+ 
+
+Add the following variables in the file from the beginning  ~ / Yocto / build-fido / conf / local.conf
+
+MACHINE = "raspberrypi2"
+DISTRO = "poky"
+DL_DIR = "${TOPDIR}/../dl"
+PACKAGE_CLASSES = "package_ipk"
+DISTRO_FEATURES_remove = "x11 wayland"
+LICENSE_FLAGS_WHITELIST = "commercial license"
+# Set Rpi GPU Memory to 128MB
+GPU_MEM = "128"
+BBMASK = "meta-embarcados/recipes-browser/chromium/chromium_%.bbappend"
+1
+2
+3
+4
+5
+6
+7
+8
+9
+	
+MACHINE = "raspberrypi2"
+DISTRO = "poky"
+DL_DIR = "${TOPDIR}/../dl"
+PACKAGE_CLASSES = "package_ipk"
+DISTRO_FEATURES_remove = "x11 wayland"
+LICENSE_FLAGS_WHITELIST = "commercial license"
+# Set Rpi GPU Memory to 128MB
+GPU_MEM = "128"
+BBMASK = "meta-embarcados/recipes-browser/chromium/chromium_%.bbappend"
+
+ 
+
+Note that we set up our machine as the  raspberrypi2, we change the download directory in order to reuse the downloaded sources in other projects and will use the ipk package manager (he is best suited for embedded systems because it does not require many resources to run). Also we set the GPU to use 128MB of RAM.
+
+ 
+
+NOTE: If you want to make this tutorial for the Raspberry Pi (older models), simply change the text "rapberrypi2" with "raspberrypi".
+
+ 
+
+ 
+Generating the image with Qt5
+
+ 
+
+Once downloaded the sources and have set up the build system, we generate an image with several demo applications (qt5-image-demo) of Qt5 (at the time of writing this article the Qt version used is 5.4.1).
+
+cd ~/yocto
+. poky-fido/oe-init-build-env build-fido
+bitbake qt5-image-demo
+1
+2
+3
+	
+cd ~/yocto
+. poky-fido/oe-init-build-env build-fido
+bitbake qt5-image-demo
+
+ 
+
+This is the build configuration that was used:
+
+Build Configuration:
+BB_VERSION        = "1.26.0"
+BUILD_SYS         = "x86_64-linux"
+NATIVELSBSTRING   = "Ubuntu-14.04"
+TARGET_SYS        = "arm-poky-linux-gnueabi"
+MACHINE           = "raspberrypi2"
+DISTRO            = "poky"
+DISTRO_VERSION    = "1.8"
+TUNE_FEATURES     = "arm armv7a vfp thumb neon callconvention-hard vfpv4 cortexa7"
+TARGET_FPU        = "vfp-vfpv4-neon"
+meta-embarcados   
+meta-rpi          = "fido:b81da11130c01c4b1e5fe85b1ad98c1907fff05c"
+meta-qt5          = "fido:3ccdc239b02aca03dc1e9316b7c5c870b3b59368"
+meta-raspberrypi  = "fido:b896a7da70dd7a16ba7ffd664f7747cb37e1d142"
+meta-oe           
+meta-ruby         = "fido:5b0305d9efa4b5692cd942586fb7aa92dba42d59"
+meta              
+meta-yocto        = "fido:508c4cac320d78a983ce105a78c0599102e2c349"
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+	
+Build Configuration:
+BB_VERSION        = "1.26.0"
+BUILD_SYS         = "x86_64-linux"
+NATIVELSBSTRING   = "Ubuntu-14.04"
+TARGET_SYS        = "arm-poky-linux-gnueabi"
+MACHINE           = "raspberrypi2"
+DISTRO            = "poky"
+DISTRO_VERSION    = "1.8"
+TUNE_FEATURES     = "arm armv7a vfp thumb neon callconvention-hard vfpv4 cortexa7"
+TARGET_FPU        = "vfp-vfpv4-neon"
+meta-embarcados   
+meta-rpi          = "fido:b81da11130c01c4b1e5fe85b1ad98c1907fff05c"
+meta-qt5          = "fido:3ccdc239b02aca03dc1e9316b7c5c870b3b59368"
+meta-raspberrypi  = "fido:b896a7da70dd7a16ba7ffd664f7747cb37e1d142"
+meta-oe           
+meta-ruby         = "fido:5b0305d9efa4b5692cd942586fb7aa92dba42d59"
+meta              
+meta-yocto        = "fido:508c4cac320d78a983ce105a78c0599102e2c349"
+
+ 
+
+ 
+Recording the image
+
+ 
+
+The layer meta-raspberrypi has a class that implements the system image of the building to be recorded directly on a SDcard.
+
+ 
+
+The Yocto generated image of SDcard which is available at:  ~ / Yocto / build-fido / tmp / deploy / images / raspberrypi2  /. Armed with this file we can place them on the SDcard.
+
+ 
+
+Enter a SDcard card on your PC or notebook computer (host system) and find out which  device node  created by the operating system. Try one of the following commands:
+
+dmesg
+sudo fdisk -l
+1
+2
+	
+dmesg
+sudo fdisk -l
+
+ 
+
+If, for example, the  device node  created is  / dev / sdb, use the following command:
+
+sudo umount /dev/sdb*
+sudo dd if=~/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2.rpi-sdimg of=/dev/sdb; sync
+1
+2
+	
+sudo umount /dev/sdb*
+sudo dd if=~/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2.rpi-sdimg of=/dev/sdb; sync
+
+ 
