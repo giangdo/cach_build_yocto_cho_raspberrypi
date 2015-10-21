@@ -11,5 +11,136 @@
 * Trong hướng dẫn này người viết sử dụng ubuntu bản 14.04.3 LTS (để kiểm tra phiên bản hiện tại của hệ điều hành Ubuntu, ta dùng "$lsb_release -a")
 	
 * Cài đặt một số gói cần thiết để chuẩn bị cho việc build yocto:
-$sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib \
-     build-essential chrpath socat libsdl1.2-dev xterm 
+	$sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat libsdl1.2-dev xterm
+
+* Tạo thư mục để build và tải về mã nguồn cần thiết:
+	$mkdir -p ~/yocto/dl
+	$cd ~/yocto
+	$git clone -b fido git://git.yoctoproject.org/poky poky-fido
+	$cd poky-fido
+	$git clone -b fido git://git.yoctoproject.org/meta-raspberrypi
+	$git clone -b fido https://github.com/meta-qt5/meta-qt5.git
+	$git clone -b fido git://git.openembedded.org/meta-openembedded
+	$git clone -b fido https://bitbucket.org/embarcados/meta-embarcados.git
+    
+* Lưu ý: đến đây ta sử dụng Bash Shell để chạy thay vì Fishshell
+* Thiết lập môi trường để tạo phần mềm artifacts?
+	$cd ~/yocto/
+	$. poky-fido/oe-init-build-env build-fido
+
+	Sau lệnh này thư mục ~/yocto/build-fido/ sẽ được tạo ra
+
+* Chỉnh sửa nội dung của file ~/yocto/build-fido/conf/bblayers.conf thành như sau:
+	$vim 	~/yocto/build-fido/conf/bblayers.conf
+#####################################################################
+# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
+# changes incompatibly
+LCONF_VERSION = "6"
+
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
+
+BBLAYERS ?= " \
+    ${TOPDIR}/../poky-fido/meta-embarcados \
+    ${TOPDIR}/../poky-fido/meta-embarcados/meta-rpi \
+    ${TOPDIR}/../poky-fido/meta-qt5 \
+    ${TOPDIR}/../poky-fido/meta-raspberrypi \
+    ${TOPDIR}/../poky-fido/meta-openembedded/meta-oe \
+    ${TOPDIR}/../poky-fido/meta-openembedded/meta-ruby \
+    ${TOPDIR}/../poky-fido/meta \
+    ${TOPDIR}/../poky-fido/meta-yocto \
+  "
+#####################################################################
+
+-> nội dung của file này chứa các lớp sẽ được quan tâm tới bởi hệ thống build.
+
+* Thêm các thiết lập cho biến môi trường như sau ở đầu của file ~/yocto/build-fido/conf/local.conf :
+	$vim ~/yocto/build-fido/conf/local.conf
+#####################################################################
+MACHINE = "raspberrypi2"
+DISTRO = "poky"
+DL_DIR = "${TOPDIR}/../dl"
+PACKAGE_CLASSES = "package_ipk"
+DISTRO_FEATURES_remove = "x11 wayland"
+LICENSE_FLAGS_WHITELIST = "commercial license"
+# Set Rpi GPU Memory to 128MB
+GPU_MEM = "128"
+BBMASK = "meta-embarcados/recipes-browser/chromium/chromium_%.bbappend"
+#####################################################################
+
+* Tạo file ảnh với QT5:
+	Khi tải về mã nguồn và thiết lập xong hệ thống build, ta sẽ tạo file ảnh với một số ứng dung QT demo trên đó (qt5-image-demo)
+
+	$cd ~/yocto
+	$. poky-fido/oe-init-build-env build-fido
+	$bitbake qt5-image-demo
+
+Start time: 12:30
+
+giang@giang:~/yocto/build-fido$ bitbake qt5-image-demo
+Parsing recipes: 100% |########################################################################################################################################################################################################| Time: 00:02:28
+Parsing of 1546 .bb files complete (0 cached, 1546 parsed). 2023 targets, 279 skipped, 1 masked, 0 errors.
+NOTE: Resolving any missing task queue dependencies
+
+Build Configuration:
+BB_VERSION        = "1.26.0"
+BUILD_SYS         = "x86_64-linux"
+NATIVELSBSTRING   = "Ubuntu-14.04"
+TARGET_SYS        = "arm-poky-linux-gnueabi"
+MACHINE           = "raspberrypi2"
+DISTRO            = "poky"
+DISTRO_VERSION    = "1.8.1"
+TUNE_FEATURES     = "arm armv7a vfp thumb neon callconvention-hard vfpv4 cortexa7"
+TARGET_FPU        = "vfp-vfpv4-neon"
+meta-embarcados
+meta-rpi          = "fido:dfb2e27bf26b109fc6ccb3bc91924fb3bb24f655"
+meta-qt5          = "fido:90919b9d86988e7da01fa2c0a07246b5b5600a5d"
+meta-raspberrypi  = "fido:b896a7da70dd7a16ba7ffd664f7747cb37e1d142"
+meta-oe
+meta-ruby         = "fido:df2f700d66bace65f5d802225232d01cf511fe81"
+meta
+meta-yocto        = "fido:b74ea963cefffad9fbd91d4eb9b240f6a8c86cd0"
+
+NOTE: Preparing RunQueue
+NOTE: Executing SetScene Tasks
+NOTE: Executing RunQueue Tasks
+Currently 4 running tasks (99 of 3630):
+0: gcc-source-4.9.2-r0 do_unpack (pid 19309)
+1: linux-libc-headers-3.19-r0 do_fetch (pid 27108)
+2: xz-native-5.2.0-r0 do_configure (pid 29051)
+3: gmp-native-6.0.0-r0 do_configure (pid 29236)
+
+Build status in 12:45
+Currently 4 running tasks (149 of 3630):
+0: sqlite3-native-3_3.8.7.4-r0 do_compile (pid 12186)
+1: ncurses-native-5.9-r15.1 do_compile (pid 18027)
+2: binutils-cross-arm-2.24-r0 do_compile (pid 29011)
+3: libmpc-native-1.0.2-r0 do_configure (pid 8248)
+
+Build status in 14:20
+WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
+Currently 4 running tasks (660 of 3630):
+0: vc-graphics-hardfp-20150206-r1.0 do_fetch (pid 14818)
+1: qtbase-native-5.4.2+gitAUTOINC+2cb17c1fb9-r0 do_compile (pid 18035)
+2: gcc-runtime-4.9.2-r0 do_configure (pid 7935)
+3: util-linux-native-2.25.2-r1 do_compile (pid 19345)
+
+Build status in 14:26
+WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
+WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
+Currently 4 running tasks (703 of 3630):
+0: gcc-runtime-4.9.2-r0 do_compile (pid 25387)
+1: linux-raspberrypi-3.18.5+gita6cf3c99bc89e2c010c2f78fbf9e3ed478ccfd46-r0 do_fetch (pid 16064)
+2: gstreamer1.0-1.4.5-r0 do_fetch (pid 18059)
+3: apr-native-1.5.1-r0 do_compile (pid 22667)
+
+Build status 13:16
+WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
+WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
+WARNING: Failed to fetch URL http://www.apache.org/dist/subversion/subversion-1.8.11.tar.bz2, attempting MIRRORS if available
+Currently 4 running tasks (985 of 3630):
+0: python-2.7.9-r1 do_compile (pid 21248)
+1: glib-2.0-1_2.42.1-r0 do_compile (pid 22831)
+2: util-linux-2.25.2-r1 do_package (pid 17851)
+3: libtool-2.4.6-r0 do_install (pid 27622)
+
