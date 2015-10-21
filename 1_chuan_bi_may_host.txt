@@ -134,7 +134,7 @@ Currently 4 running tasks (703 of 3630):
 2: gstreamer1.0-1.4.5-r0 do_fetch (pid 18059)
 3: apr-native-1.5.1-r0 do_compile (pid 22667)
 
-Build status 13:16
+Build status 15:16
 WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
 WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
 WARNING: Failed to fetch URL http://www.apache.org/dist/subversion/subversion-1.8.11.tar.bz2, attempting MIRRORS if available
@@ -143,4 +143,25 @@ Currently 4 running tasks (985 of 3630):
 1: glib-2.0-1_2.42.1-r0 do_compile (pid 22831)
 2: util-linux-2.25.2-r1 do_package (pid 17851)
 3: libtool-2.4.6-r0 do_install (pid 27622)
+
+Build status 16:23
+WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
+WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
+WARNING: Failed to fetch URL http://www.apache.org/dist/subversion/subversion-1.8.11.tar.bz2, attempting MIRRORS if available
+Currently 4 running tasks (1199 of 3630):
+0: perl-5.20.0-r1 do_compile (pid 9460)
+1: qtbase-5.4.2+gitAUTOINC+2cb17c1fb9-r0 do_compile (pid 2579)
+2: tremor-20120314-r1 do_configure (pid 10971)
+3: dbus-test-1.8.10-r0 do_compile (pid 10979)
+
+Build status 18:00
+WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
+WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
+WARNING: Failed to fetch URL http://www.apache.org/dist/subversion/subversion-1.8.11.tar.bz2, attempting MIRRORS if available
+WARNING: QA Issue: gstreamer1.0-plugins-bad: configure was passed unrecognised options: --with-egl-window-system [unknown-configure-option]
+Currently 4 running tasks (1528 of 3630):
+0: qtbase-5.4.2+gitAUTOINC+2cb17c1fb9-r0 do_compile (pid 2579)
+1: binutils-native-2.24-r0 do_compile (pid 30567)
+2: qtwebkit-5.4.2+gitAUTOINC+ea590d74ea-r0 do_fetch (pid 16493)
+3: gstreamer1.0-plugins-bad-1.4.5-r0 do_install (pid 10606)
 
