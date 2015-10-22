@@ -165,3 +165,29 @@ Currently 4 running tasks (1528 of 3630):
 2: qtwebkit-5.4.2+gitAUTOINC+ea590d74ea-r0 do_fetch (pid 16493)
 3: gstreamer1.0-plugins-bad-1.4.5-r0 do_install (pid 10606)
 
+NOTE: Executing RunQueue Tasks
+WARNING: QA Issue: ELF binary '/home/giang/yocto/build-fido/tmp/work/cortexa7hf-vfp-vfpv4-neon-poky-linux-gnueabi/x264/r2265+gitAUTOINC+ffc3ad4945-r0/packages-split/x264/usr/lib/libx264.so.133' has relocations in .text [textrel]
+WARNING: QA Issue: ELF binary '/home/giang/yocto/build-fido/tmp/work/cortexa7hf-vfp-vfpv4-neon-poky-linux-gnueabi/libav/9.16-r0/packages-split/libavcodec/usr/lib/libavcodec.so.54.35.0' has relocations in .text [textrel]
+WARNING: QA Issue: pulseaudio-module-console-kit rdepends on consolekit, but it isn't a build dependency? [build-deps]
+WARNING: QA Issue: ELF binary '/home/giang/yocto/build-fido/tmp/work/cortexa7hf-vfp-vfpv4-neon-poky-linux-gnueabi/vc-graphics-hardfp/20150206-r1.0/packages-split/vc-graphics-hardfp/usr/lib/libGLESv2.so' has relocations in .text [textrel]
+WARNING: QA Issue: ELF binary '/home/giang/yocto/build-fido/tmp/work/cortexa7hf-vfp-vfpv4-neon-poky-linux-gnueabi/omxplayer/git-r3/packages-split/omxplayer/usr/lib/omxplayer/libavcodec.so.56.13.100' has relocations in .text [textrel]
+WARNING: QA Issue: ELF binary '/home/giang/yocto/build-fido/tmp/work/cortexa7hf-vfp-vfpv4-neon-poky-linux-gnueabi/gstreamer1.0-libav/1.4.5-r0/packages-split/gstreamer1.0-libav/usr/lib/gstreamer-1.0/libgstlibav.so' has relocations in .text [textrel]
+NOTE: Tasks Summary: Attempted 3630 tasks of which 2675 didn't need to be rerun and all succeeded.
+
+*Khi kết thúc quá trình build trên, file ảnh qt5-image-demo-raspberrypi2.rpi-sdimg sẽ được tạo ra 
+	$file ~/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2.rpi-sdimg
+	/home/giang/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2.rpi-sdimg: symbolic link to `qt5-image-demo-raspberrypi2-20151022020232.rootfs.rpi-sdimg'
+	
+	$du -h ~/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2-20151022020232.rootfs.rpi-sdimg
+	549M    /home/giang/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2-20151022020232.rootfs.rpi-sdimg
+
+*Ghi file ảnh ra thẻ nhớ SD:
+	+ Xác định tên device của thẻ nhớ: dùng lênh fdisk hoặc lsblk
+		$sudo fdisk -l
+		$lsblk
+	
+	+ unmount mọi phân vùng của thẻ nhớ, giả sử trong trường hợp này là sdb
+		$sudo umount /dev/sdb*
+
+	+ ghi file ảnh ra thẻ nhớ /dev/sdb, lưu ý là phải chọn sdb chứ ko chọn sdb1 hay sdb2 ..., vì ta muốn ghi vào cả thẻ nhớ chứ không phải là ghi vào 1 phân vùng của thẻ nhớ:
+		$sudo dd if=~/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2.rpi-sdimg of=/dev/sdb; sync
