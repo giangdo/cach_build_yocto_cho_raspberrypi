@@ -10,7 +10,7 @@
 
 * Trong hướng dẫn này người viết sử dụng ubuntu bản 14.04.3 LTS (để kiểm tra phiên bản hiện tại của hệ điều hành Ubuntu, ta dùng "$lsb_release -a")
 	
-* Phân vùng ổ cứng dùng được dùng cho thư mục home phải còn trống ít nhất 55gb!
+* Phân vùng ổ cứng dùng được dùng cho thư mục home phải còn trống ít nhất 70gb!
 
 * Cài đặt một số gói cần thiết để chuẩn bị cho việc build yocto:
 	$sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat libsdl1.2-dev xterm

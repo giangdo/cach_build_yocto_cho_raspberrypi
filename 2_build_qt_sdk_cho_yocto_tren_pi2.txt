@@ -1,0 +1,87 @@
+* Trong phần 1 bằng cách sử dụng yocto project chúng ta đã thiết lập môi trường để build một bản Linux nhúng với Qt5 trong đó để sử dụng tính năng "hardware acceleration".
+
+* Bây giờ chúng ta sẽ build những công cụ cần thiết trên máy host để phát triển những ứng dụng Qt có thể chạy trên raspberry pi 2. Về cơ bản, chúng ta cần một chuỗi công cụ (toolchain) mà trong đó có chứa những công cụ và thư viện để có thể "cross-compiling" những ứng dụng Qt được phát triển bởi IDE QT Creator.
+
+* Tạo toolchain cho Qt5:
+
+* Trước tiên ta phải thực hiện xong tất cả các bước như phần 1.
+
+* Bắt đầu: (Thực hiện trong bash shell)
+
+* Tải lại biến môi trường và build toolchain:
+	$cd ~/yocto
+	$. poky-fido/oe-init-build-env build-fido
+	$bitbake meta-toolchain-qt5
+
+	+ Việc build có thể mất vài tiếng tùy theo cấu hình máy.
+	+ Một số thông tin được hiển thị trong quá trình build:
+
+~/yocto/build-fido$ bitbake meta-toolchain-qt5
+Loading cache: 100% |##########################################################################################################################################################################################################| ETA:  00:00:00
+Loaded 2024 entries from dependency cache.
+NOTE: Resolving any missing task queue dependencies
+
+Build Configuration:
+BB_VERSION        = "1.26.0"
+BUILD_SYS         = "x86_64-linux"
+NATIVELSBSTRING   = "Ubuntu-14.04"
+TARGET_SYS        = "arm-poky-linux-gnueabi"
+MACHINE           = "raspberrypi2"
+DISTRO            = "poky"
+DISTRO_VERSION    = "1.8.1"
+TUNE_FEATURES     = "arm armv7a vfp thumb neon callconvention-hard vfpv4 cortexa7"
+TARGET_FPU        = "vfp-vfpv4-neon"
+meta-embarcados
+meta-rpi          = "fido:dfb2e27bf26b109fc6ccb3bc91924fb3bb24f655"
+meta-qt5          = "fido:90919b9d86988e7da01fa2c0a07246b5b5600a5d"
+meta-raspberrypi  = "fido:b896a7da70dd7a16ba7ffd664f7747cb37e1d142"
+meta-oe
+meta-ruby         = "fido:df2f700d66bace65f5d802225232d01cf511fe81"
+meta
+meta-yocto        = "fido:b74ea963cefffad9fbd91d4eb9b240f6a8c86cd0"
+
+NOTE: Preparing RunQueue
+NOTE: Executing SetScene Tasks
+NOTE: Executing RunQueue Tasks
+Currently 1 running tasks (2857 of 3420):
+0: nativesdk-glibc-initial-2.21-r0 do_install (pid 6188)
+
+Currently 1 running tasks (2878 of 3420):
+0: gcc-crosssdk-x86_64-4.9.2-r0 do_compile (pid 30583)
+
+NOTE: Preparing RunQueue
+NOTE: Executing SetScene Tasks
+NOTE: Executing RunQueue Tasks
+WARNING: QA Issue: gcc-cross-canadian-arm: found library in wrong location: /opt/poky/1.8.1/sysroots/x86_64-pokysdk-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/4.9.2/liblto_plugin.so.0
+gcc-cross-canadian-arm: found library in wrong location: /opt/poky/1.8.1/sysroots/x86_64-pokysdk-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/4.9.2/liblto_plugin.so.0.0.0
+gcc-cross-canadian-arm: found library in wrong location: /opt/poky/1.8.1/sysroots/x86_64-pokysdk-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/4.9.2/liblto_plugin.so
+gcc-cross-canadian-arm-dbg: found library in wrong location: /opt/poky/1.8.1/sysroots/x86_64-pokysdk-linux/usr/libexec/arm-poky-linux-gnueabi/gcc/arm-poky-linux-gnueabi/4.9.2/.debug/liblto_plugin.so.0.0.0 [libdir]
+NOTE: Tasks Summary: Attempted 3420 tasks of which 2458 didn't need to be rerun and all succeeded.
+
+Summary: There was 1 WARNING message shown.
+
+* Sau khi build xong ta có được một script để cài đặt toolchain vào máy host ở thư mục ~/yocto/build-fido/tmp/deploy/sdk:
+	$ls ~/yocto/build-fido/tmp/deploy/sdk
+	poky-glibc-x86_64-meta-toolchain-qt5-cortexa7hf-vfp-vfpv4-neon-toolchain-1.8.1.manifest
+	poky-glibc-x86_64-meta-toolchain-qt5-cortexa7hf-vfp-vfpv4-neon-toolchain-1.8.1.sh*
+
+* Cài đặt toolchain bằng script trên: (Chọn thư mục default để cài đặt)
+	$~/yocto/build-fido/tmp/deploy/sdk/poky-glibc-x86_64-meta-toolchain-qt5-cortexa7hf-vfp-vfpv4-neon-toolchain-1.8.sh
+	Enter target directory for SDK (default: /opt/poky/1.8.1):
+	You are about to install the SDK to "/opt/poky/1.8.1". Proceed[Y/n]?Y
+	[sudo] password for giang:
+	Extracting SDK...
+	Extracting SDK...done
+	Setting it up...done
+	SDK has been successfully set up and is ready to be used.
+
+	+ Lưu ý: bộ toolchain này được sử dụng để phát triển cho cả ứng dụng Qt5 và ứng bình thường ko dùng Qt5 cho Linux nhúng
+
+* Tải về và cài đặt bộ Qt Creator
+	$wget http://download.qt.io/official_releases/qtcreator/3.4/3.4.0/qt-creator-opensource-linux-x86_64-3.4.0.run -P ~/Downloads
+	$chmod +x ~/Downloads/qt-creator-opensource-linux-x86_64-3.4.0.run
+	$~/Downloads/qt-creator-opensource-linux-x86_64-3.4.0.run
+
+* Cấu hình cho Qt Creator:
+	+ Nhớ là phải tắt Qt Creator trước khi cấu hình cho nó.
+	+ Thêm biến môi trường của toolchain và start script của Qt Creator.
