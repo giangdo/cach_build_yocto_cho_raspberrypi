@@ -10,6 +10,8 @@
 
 * Trong hướng dẫn này người viết sử dụng ubuntu bản 14.04.3 LTS (để kiểm tra phiên bản hiện tại của hệ điều hành Ubuntu, ta dùng "$lsb_release -a")
 	
+* Phân vùng ổ cứng dùng được dùng cho thư mục home phải còn trống ít nhất 55gb!
+
 * Cài đặt một số gói cần thiết để chuẩn bị cho việc build yocto:
 	$sudo apt-get install gawk wget git-core diffstat unzip texinfo gcc-multilib build-essential chrpath socat libsdl1.2-dev xterm
 
@@ -70,13 +72,13 @@ BBMASK = "meta-embarcados/recipes-browser/chromium/chromium_%.bbappend"
 
 * Tạo file ảnh với QT5:
 	Khi tải về mã nguồn và thiết lập xong hệ thống build, ta sẽ tạo file ảnh với một số ứng dung QT demo trên đó (qt5-image-demo)
+	Thời gian build có thể lên tới vài tiếng đồng hồ.
 
 	$cd ~/yocto
 	$. poky-fido/oe-init-build-env build-fido
 	$bitbake qt5-image-demo
 
-Start time: 12:30
-
+	* Một số thông tin được hiển thị trong quá trình build:
 giang@giang:~/yocto/build-fido$ bitbake qt5-image-demo
 Parsing recipes: 100% |########################################################################################################################################################################################################| Time: 00:02:28
 Parsing of 1546 .bb files complete (0 cached, 1546 parsed). 2023 targets, 279 skipped, 1 masked, 0 errors.
@@ -110,51 +112,6 @@ Currently 4 running tasks (99 of 3630):
 2: xz-native-5.2.0-r0 do_configure (pid 29051)
 3: gmp-native-6.0.0-r0 do_configure (pid 29236)
 
-Build status in 12:45
-Currently 4 running tasks (149 of 3630):
-0: sqlite3-native-3_3.8.7.4-r0 do_compile (pid 12186)
-1: ncurses-native-5.9-r15.1 do_compile (pid 18027)
-2: binutils-cross-arm-2.24-r0 do_compile (pid 29011)
-3: libmpc-native-1.0.2-r0 do_configure (pid 8248)
-
-Build status in 14:20
-WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
-Currently 4 running tasks (660 of 3630):
-0: vc-graphics-hardfp-20150206-r1.0 do_fetch (pid 14818)
-1: qtbase-native-5.4.2+gitAUTOINC+2cb17c1fb9-r0 do_compile (pid 18035)
-2: gcc-runtime-4.9.2-r0 do_configure (pid 7935)
-3: util-linux-native-2.25.2-r1 do_compile (pid 19345)
-
-Build status in 14:26
-WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
-WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
-Currently 4 running tasks (703 of 3630):
-0: gcc-runtime-4.9.2-r0 do_compile (pid 25387)
-1: linux-raspberrypi-3.18.5+gita6cf3c99bc89e2c010c2f78fbf9e3ed478ccfd46-r0 do_fetch (pid 16064)
-2: gstreamer1.0-1.4.5-r0 do_fetch (pid 18059)
-3: apr-native-1.5.1-r0 do_compile (pid 22667)
-
-Build status 15:16
-WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
-WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
-WARNING: Failed to fetch URL http://www.apache.org/dist/subversion/subversion-1.8.11.tar.bz2, attempting MIRRORS if available
-Currently 4 running tasks (985 of 3630):
-0: python-2.7.9-r1 do_compile (pid 21248)
-1: glib-2.0-1_2.42.1-r0 do_compile (pid 22831)
-2: util-linux-2.25.2-r1 do_package (pid 17851)
-3: libtool-2.4.6-r0 do_install (pid 27622)
-
-Build status 16:23
-WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
-WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
-WARNING: Failed to fetch URL http://www.apache.org/dist/subversion/subversion-1.8.11.tar.bz2, attempting MIRRORS if available
-Currently 4 running tasks (1199 of 3630):
-0: perl-5.20.0-r1 do_compile (pid 9460)
-1: qtbase-5.4.2+gitAUTOINC+2cb17c1fb9-r0 do_compile (pid 2579)
-2: tremor-20120314-r1 do_configure (pid 10971)
-3: dbus-test-1.8.10-r0 do_compile (pid 10979)
-
-Build status 18:00
 WARNING: Failed to fetch URL http://downloads.sourceforge.net/project/libpng/libpng16/1.6.16/libpng-1.6.16.tar.xz, attempting MIRRORS if available
 WARNING: Failed to fetch URL http://www.apache.org/dist/apr/apr-1.5.1.tar.bz2, attempting MIRRORS if available
 WARNING: Failed to fetch URL http://www.apache.org/dist/subversion/subversion-1.8.11.tar.bz2, attempting MIRRORS if available
@@ -174,7 +131,7 @@ WARNING: QA Issue: ELF binary '/home/giang/yocto/build-fido/tmp/work/cortexa7hf-
 WARNING: QA Issue: ELF binary '/home/giang/yocto/build-fido/tmp/work/cortexa7hf-vfp-vfpv4-neon-poky-linux-gnueabi/gstreamer1.0-libav/1.4.5-r0/packages-split/gstreamer1.0-libav/usr/lib/gstreamer-1.0/libgstlibav.so' has relocations in .text [textrel]
 NOTE: Tasks Summary: Attempted 3630 tasks of which 2675 didn't need to be rerun and all succeeded.
 
-*Khi kết thúc quá trình build trên, file ảnh qt5-image-demo-raspberrypi2.rpi-sdimg sẽ được tạo ra 
+*Khi kết thúc quá trình build trên, file ảnh qt5-image-demo-raspberrypi2.rpi-sdimg sẽ được tạo ra trong thư mục ~/yocto/build-fido/tmp/deploy/images/raspberrypi2/ :
 	$file ~/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2.rpi-sdimg
 	/home/giang/yocto/build-fido/tmp/deploy/images/raspberrypi2/qt5-image-demo-raspberrypi2.rpi-sdimg: symbolic link to `qt5-image-demo-raspberrypi2-20151022020232.rootfs.rpi-sdimg'
 	
