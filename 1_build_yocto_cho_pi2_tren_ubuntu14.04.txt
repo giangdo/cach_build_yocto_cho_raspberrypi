@@ -1,3 +1,6 @@
+* Tham khảo:
+http://www.embarcados.com.br/raspberry-pi-2-qt5-yocto-parte-1/
+
 * Để build file ảnh yocto chứa hệ điều hành cho raspberry pi ta cần một máy tính chạy một trong những bản phân phối Linux sau:
 	Ubuntu 14.04 (LTS)
 	Ubuntu 14.10

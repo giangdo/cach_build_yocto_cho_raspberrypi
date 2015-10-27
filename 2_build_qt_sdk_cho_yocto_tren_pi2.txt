@@ -1,3 +1,6 @@
+* Tham khảo:
+http://www.embarcados.com.br/raspberry-pi-2-qt5-qt-creator-yocto-fido/
+
 * Trong phần 1 bằng cách sử dụng yocto project chúng ta đã thiết lập môi trường để build một bản Linux nhúng với Qt5 trong đó để sử dụng tính năng "hardware acceleration".
 
 * Bây giờ chúng ta sẽ build những công cụ cần thiết trên máy host để phát triển những ứng dụng Qt có thể chạy trên raspberry pi 2. Về cơ bản, chúng ta cần một chuỗi công cụ (toolchain) mà trong đó có chứa những công cụ và thư viện để có thể "cross-compiling" những ứng dụng Qt được phát triển bởi IDE QT Creator.
@@ -80,7 +83,11 @@ Summary: There was 1 WARNING message shown.
 * Tải về và cài đặt bộ Qt Creator
 	$wget http://download.qt.io/official_releases/qtcreator/3.4/3.4.0/qt-creator-opensource-linux-x86_64-3.4.0.run -P ~/Downloads
 	$chmod +x ~/Downloads/qt-creator-opensource-linux-x86_64-3.4.0.run
+
+	+ Cài đặt qt-creator:
 	$~/Downloads/qt-creator-opensource-linux-x86_64-3.4.0.run
+		- UI wizard sẽ hiện ra để cài đặt qt-creator:
+		- Chọn đường dẫn đề cài đặt phần mềm qt-creator: /home/giang/qtcreator-3.4.0
 
 * Cấu hình cho Qt Creator:
 	+ Nhớ là phải tắt Qt Creator trước khi cấu hình cho nó.
